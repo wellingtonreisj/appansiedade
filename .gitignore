@@ -1,6 +1,11 @@
 # Secrets — NUNCA versionar
 .env
 
+# Pastas pessoais — não subir para o GitHub
+Finança/
+Fitness/
+wellington_perfil.md
+
 # Banco de dados local
 data.db
 *.db-shm
