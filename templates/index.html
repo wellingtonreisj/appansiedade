@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#080812" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Vida W" />
+  <title>App Vida — Wellington</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:#080812;color:#e2e8f0;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      min-height:100vh;padding-bottom:52px;
+    }
+
+    /* Header */
+    .header{
+      background:linear-gradient(155deg,#1e1b4b 0%,#0f2a4a 100%);
+      padding:52px 20px 36px;
+    }
+    .header::after{
+      content:'';display:block;height:40px;
+      background:#080812;border-radius:50% 50% 0 0/100% 100% 0 0;
+      margin-top:16px;
+    }
+
+    /* Cards */
+    .card{background:#111120;border-radius:20px;padding:20px;border:1px solid #1c1c30;}
+    .inset{background:#1a1a2e;border-radius:14px;padding:14px 16px;border:1px solid #252545;}
+    .section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4b5563;margin-bottom:12px;}
+
+    /* Habit badges */
+    .hb{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:500;}
+    .hb-g{background:#052e16;color:#4ade80;border:1px solid #14532d;}
+    .hb-r{background:#2d0a0a;color:#f87171;border:1px solid #450a0a;}
+    .hb-y{background:#2a1a00;color:#fbbf24;border:1px solid #451a03;}
+    .hb-b{background:#0c1a2e;color:#60a5fa;border:1px solid #1e3a5f;}
+    .hb-gray{background:#141422;color:#9ca3af;border:1px solid #1f2937;}
+
+    /* Anxiety reading */
+    .anx-reading{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 14px;border-radius:14px;}
+    .anx-low{background:#052e16;border:1px solid #14532d;}
+    .anx-mid{background:#2a1a00;border:1px solid #451a03;}
+    .anx-hi{background:#2d0a0a;border:1px solid #450a0a;}
+    .anx-none{background:#141422;border:1px solid #1f2937;}
+
+    /* Emotion chips */
+    .ec{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid transparent;}
+    .ec-g{background:#052e16;color:#4ade80;border-color:#14532d;}
+    .ec-r{background:#2d0a0a;color:#f87171;border-color:#450a0a;}
+    .ec-o{background:#2a1200;color:#fb923c;border-color:#7c2d12;}
+    .ec-y{background:#2a1a00;color:#fbbf24;border-color:#451a03;}
+    .ec-b{background:#0c1a2e;color:#60a5fa;border-color:#1e3a5f;}
+    .ec-i{background:#1e1b4b;color:#a5b4fc;border-color:#312e81;}
+    .ec-p{background:#2e1065;color:#d8b4fe;border-color:#4c1d95;}
+    .ec-gray{background:#141422;color:#9ca3af;border-color:#1f2937;}
+
+    /* Thought */
+    .thought{font-size:14px;line-height:1.75;color:#cbd5e1;font-style:italic;border-left:3px solid #312e81;padding-left:14px;}
+
+    /* Streak cards */
+    .s-smoke{background:linear-gradient(135deg,#052e16,#065f46);border-color:#14532d;}
+    .s-drink{background:linear-gradient(135deg,#0c1a2e,#1e3a5f);border-color:#1d4ed8;}
+
+    /* Diet row */
+    .meal-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #1c1c30;}
+    .meal-row:last-child{border-bottom:none;}
+    .meal-check{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .mc-done{background:#052e16;border:1px solid #14532d;}
+    .mc-miss{background:#141422;border:1px solid #1f2937;}
+
+    /* Week training dots */
+    .wd{width:36px;height:36px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:10px;font-weight:700;}
+    .wd-train{background:#065f46;color:#4ade80;border:1px solid #14532d;}
+    .wd-rest{background:#141422;color:#4b5563;border:1px solid #1f2937;}
+    .wd-today{ring:2px;outline:2px solid #818cf8;outline-offset:2px;}
+    .wd-future{background:#0c0c1a;color:#374151;border:1px dashed #1f2937;}
+
+    /* Correlation insight */
+    .corr-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #1c1c30;}
+    .corr-row:last-child{border-bottom:none;}
+
+    /* Exercise dots */
+    .ex-d{width:22px;height:22px;border-radius:6px;display:inline-block;margin:2px;transition:transform .1s;}
+    .ex-d:hover{transform:scale(1.2);}
+    .ex-y{background:#065f46;} .ex-n{background:#450a0a;} .ex-e{background:#1f2937;}
+
+    /* Expense */
+    .catb{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:600;}
+    .ca{background:#052e16;color:#4ade80;} .ct{background:#0c1a2e;color:#60a5fa;}
+    .cs{background:#2d0a0a;color:#f87171;} .cc{background:#2a1a00;color:#fbbf24;}
+    .cl{background:#2e1065;color:#d8b4fe;} .co{background:#141422;color:#9ca3af;}
+
+    /* Quote box */
+    .qbox{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:16px 18px;}
+
+    /* MIT badge */
+    .mit-done{background:#052e16;color:#4ade80;border:1px solid #14532d;}
+    .mit-partial{background:#2a1a00;color:#fbbf24;border:1px solid #451a03;}
+    .mit-miss{background:#2d0a0a;color:#f87171;border:1px solid #450a0a;}
+
+    /* Divider */
+    hr.div{border:none;border-top:1px solid #1c1c30;margin:14px 0;}
+
+    .fade{animation:fi .4s ease both;}
+    .fade2{animation:fi .4s .1s ease both;}
+    .fade3{animation:fi .4s .2s ease both;}
+    @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading" class="flex items-center justify-center min-h-screen">
+  <div class="text-center space-y-3">
+    <p class="text-4xl">🧠</p>
+    <p class="text-gray-400 text-sm">Carregando...</p>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="content" style="display:none">
+
+<!-- HEADER -->
+<div class="header fade">
+  <p id="greeting" class="text-indigo-400 text-sm font-semibold mb-1"></p>
+  <h1 class="text-3xl font-black text-white tracking-tight">Wellington</h1>
+  <p id="date-label" class="text-indigo-300/50 text-xs mt-1 mb-5"></p>
+  <div class="qbox">
+    <p id="quote-text"  class="text-gray-300 text-sm leading-relaxed italic"></p>
+    <p id="quote-author" class="text-indigo-400 text-xs mt-2 font-semibold"></p>
+  </div>
+</div>
+
+<div class="px-4 mt-6 space-y-4">
+
+<!-- ── HOJE ──────────────────────────────────────────── -->
+<div class="card fade2">
+  <p class="section-label">Hoje</p>
+
+  <!-- Hábitos -->
+  <div id="today-habits" class="flex flex-wrap gap-2 mb-4"></div>
+
+  <hr class="div">
+
+  <!-- Ansiedade 3x + Emoções -->
+  <div class="flex gap-3">
+
+    <!-- 3 leituras -->
+    <div class="flex-none">
+      <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide mb-2">Ansiedade</p>
+      <div class="flex gap-2" id="anx-readings"></div>
+    </div>
+
+    <!-- Emoções -->
+    <div class="flex-1 min-w-0">
+      <p class="text-xs text-gray-600 font-semibold uppercase tracking-wide mb-2">Emoções</p>
+      <div id="today-emotions" class="flex flex-wrap gap-1.5"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── PENSAMENTO DO DIA ──────────────────────────────── -->
+<div class="card fade2">
+  <p class="section-label">💭 Pensamento do dia</p>
+  <p id="thought-text" class="thought"></p>
+  <p id="thought-empty" class="text-gray-600 text-sm italic hidden">Nenhum pensamento registrado hoje.</p>
+</div>
+
+<!-- ── MIT ───────────────────────────────────────────── -->
+<div class="card fade2">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex-1">
+      <p class="section-label">🎯 Prioridade do dia — MIT</p>
+      <p id="mit-text" class="text-white text-sm font-medium leading-snug"></p>
+      <p id="mit-empty" class="text-gray-600 text-sm italic hidden">Nenhuma prioridade definida hoje.</p>
+    </div>
+    <span id="mit-badge" class="hb flex-none mt-0.5"></span>
+  </div>
+</div>
+
+<!-- ── DIETA DO DIA ───────────────────────────────────── -->
+<div class="card fade2">
+  <div class="flex items-center justify-between mb-1">
+    <p class="section-label mb-0">🥗 Dieta de hoje</p>
+    <span id="diet-pct" class="text-xs font-bold text-emerald-400"></span>
+  </div>
+  <div id="diet-list"></div>
+  <!-- Progresso -->
+  <div class="mt-3">
+    <div class="w-full h-2 rounded-full" style="background:#1a1a2e">
+      <div id="diet-bar" class="h-2 rounded-full transition-all" style="background:linear-gradient(90deg,#059669,#34d399)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── STREAKS ─────────────────────────────────────────── -->
+<div class="grid grid-cols-2 gap-3 fade3">
+  <div class="card s-smoke rounded-2xl p-5 text-white">
+    <p class="text-xs opacity-70 mb-1">🚭 Sem fumar</p>
+    <p id="streak-smoke" class="text-5xl font-black leading-none"></p>
+    <p class="text-xs opacity-50 mt-2">dias seguidos</p>
+  </div>
+  <div class="card s-drink rounded-2xl p-5 text-white">
+    <p class="text-xs opacity-70 mb-1">🍹 Sem beber</p>
+    <p id="streak-drink" class="text-5xl font-black leading-none"></p>
+    <p class="text-xs opacity-50 mt-2">dias seguidos</p>
+  </div>
+</div>
+
+<!-- ── SEMANA DE TREINOS ──────────────────────────────── -->
+<div class="card fade3">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <p class="section-label mb-1">💪 Treinos — semana atual</p>
+      <p class="text-gray-500 text-xs">meta: 4x por semana</p>
+    </div>
+    <div class="text-right">
+      <p id="week-count" class="text-white font-black text-2xl leading-none"></p>
+      <p class="text-gray-600 text-xs mt-0.5">de 4</p>
+    </div>
+  </div>
+  <div id="week-grid" class="flex gap-2 justify-between"></div>
+  <div class="inset mt-3 flex justify-between items-center">
+    <span id="week-streak-label" class="text-gray-400 text-sm font-semibold"></span>
+    <span id="week-pct" class="text-xs text-gray-600"></span>
+  </div>
+</div>
+
+<!-- ── ANSIEDADE 14 DIAS ──────────────────────────────── -->
+<div class="card fade3">
+  <div class="flex items-start justify-between mb-4">
+    <div>
+      <p class="section-label mb-1">📈 Ansiedade — 14 dias</p>
+      <div class="flex gap-3 text-xs text-gray-600 mt-1">
+        <span><span class="inline-block w-2 h-2 rounded-full bg-indigo-400 mr-1"></span>Noite</span>
+        <span><span class="inline-block w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>Tarde</span>
+        <span><span class="inline-block w-2 h-2 rounded-full bg-blue-400 mr-1"></span>Manhã</span>
+      </div>
+    </div>
+    <div class="text-right">
+      <p id="avg-anx" class="text-3xl font-black text-indigo-400 leading-none"></p>
+      <p class="text-gray-600 text-xs mt-0.5">média noite</p>
+    </div>
+  </div>
+  <canvas id="anxietyChart" height="130"></canvas>
+</div>
+
+<!-- ── CORRELAÇÕES ────────────────────────────────────── -->
+<div class="card fade3">
+  <p class="section-label">🔍 Padrões identificados</p>
+  <div id="correlations"></div>
+</div>
+
+<!-- ── EXERCÍCIOS 30 DIAS ─────────────────────────────── -->
+<div class="card fade3">
+  <div class="flex items-start justify-between mb-3">
+    <div>
+      <p class="section-label mb-1">Exercícios — 30 dias</p>
+    </div>
+    <div class="flex gap-3 text-xs text-gray-600">
+      <span><span class="inline-block w-3 h-3 rounded mr-1 bg-emerald-800"></span>Treinou</span>
+      <span><span class="inline-block w-3 h-3 rounded mr-1 bg-red-900"></span>Não</span>
+    </div>
+  </div>
+  <div id="exercise-grid" class="flex flex-wrap gap-0.5 mb-3"></div>
+  <div class="inset flex justify-between">
+    <span id="ex-count" class="text-gray-300 text-sm font-bold"></span>
+    <span id="ex-pct" class="text-gray-500 text-xs self-center"></span>
+  </div>
+</div>
+
+<!-- ── GASTOS ─────────────────────────────────────────── -->
+<div class="card fade3">
+  <div class="flex items-start justify-between mb-4">
+    <div>
+      <p class="section-label mb-1">💰 Gastos — maio</p>
+    </div>
+    <div class="text-right">
+      <p id="expense-total" class="text-white font-black text-xl leading-none"></p>
+      <p class="text-gray-600 text-xs mt-1">total</p>
+    </div>
+  </div>
+  <div id="expense-list" class="space-y-3"></div>
+</div>
+
+<!-- FOOTER -->
+<p class="text-center text-gray-700 text-xs pt-2">
+  Atualizado via Telegram · <span id="last-update"></span>
+</p>
+
+</div><!-- /px-4 -->
+</div><!-- /content -->
+
+<script>
+// ─── DADOS VIA API ──────────────────────────────────────────────────────────
+let DATA = null;
+
+async function loadData() {
+  try {
+    const res = await fetch('/api/stats');
+    if (!res.ok) throw new Error('API error');
+    const api = await res.json();
+
+    const t = api.today;
+    DATA = {
+      streaks:  api.streaks  || { no_smoke: 0, no_drink: 0 },
+      week:     { days: ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"], values: api.week_training || [] },
+      anxiety_history:  api.anxiety_history  || [],
+      exercise_history: api.exercise_history || [],
+      correlations: api.correlations || [],
+      diet_plan:    api.diet_plan    || [],
+      expenses: (api.expenses || []).map(e => ({
+        date: e.date ? e.date.slice(5).replace('-','/') : '',
+        amount: e.amount, cat: e.category, desc: e.description
+      })),
+      expense_total: api.expense_total || 0,
+      quote:  api.quote  || { text: '', author: '' },
+      today: t ? {
+        done:      true,
+        smoked:    t.smoked,
+        drank:     t.drank,
+        exercised: t.exercised || '',
+        took_bup:  t.took_bup,
+        anxiety:   { manha: t.anx_manha, tarde: t.anx_tarde, noite: t.anx_noite },
+        mit:       t.mit ? { text: t.mit, status: t.mit_done } : null,
+        thought:   t.thought || null,
+        diet:      Array.isArray(t.diet_meals) ? t.diet_meals : [null,null,null,null,null],
+        emotions:  Array.isArray(t.emotions)   ? t.emotions   : [],
+      } : { done: false },
+    };
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    renderAll();
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      '<p class="text-red-400 text-sm text-center px-8">Erro ao carregar dados. Verifique se o servidor está rodando.</p>';
+  }
+}
+
+function renderAll() {
+  const D = DATA;
+  renderHeader(D);
+  renderHabits(D.today);
+  renderTodayAnxiety(D.today);
+  renderEmotions(D.today);
+  renderThought(D.today);
+  renderMIT(D.today);
+  renderDiet(D.diet_plan, D.today.diet);
+  renderStreaks(D.streaks);
+  renderWeekTraining(D.week);
+  renderAnxietyChart(D.anxiety_history);
+  renderCorrelations(D.correlations);
+  renderExerciseGrid(D.exercise_history);
+  renderExpenses(D.expenses, D.expense_total);
+  document.getElementById('last-update').textContent =
+    new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ─── EMOÇÕES ─────────────────────────────────────────────────────────────────
+const EMOTIONS = {
+  feliz:      {e:"😊",l:"Feliz",      c:"ec-g"},
+  animado:    {e:"🔥",l:"Animado",    c:"ec-o"},
+  motivado:   {e:"💪",l:"Motivado",   c:"ec-g"},
+  focado:     {e:"🎯",l:"Focado",     c:"ec-b"},
+  tranquilo:  {e:"😌",l:"Tranquilo",  c:"ec-i"},
+  cansado:    {e:"😴",l:"Cansado",    c:"ec-y"},
+  irritado:   {e:"😤",l:"Irritado",   c:"ec-o"},
+  ansioso:    {e:"😰",l:"Ansioso",    c:"ec-r"},
+  triste:     {e:"😔",l:"Triste",     c:"ec-gray"},
+  sobrecarregado:{e:"🫠",l:"Sobrecarregado",c:"ec-p"},
+  grato:      {e:"🙏",l:"Grato",      c:"ec-g"},
+  estressado: {e:"🤯",l:"Estressado", c:"ec-r"},
+};
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+const brl  = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const cap  = s => s.charAt(0).toUpperCase()+s.slice(1);
+const h    = new Date().getHours();
+const greeting = h<12?"Bom dia 🌅":h<18?"Boa tarde ☀️":"Boa noite 🌙";
+const anxClass = v => !v?'anx-none':v<=3?'anx-low':v<=6?'anx-mid':'anx-hi';
+const anxColor = v => !v?'#4b5563':v<=3?'#4ade80':v<=6?'#fbbf24':'#f87171';
+const catClass = c => ({Alimentação:'ca',Transporte:'ct',Saúde:'cs',Casa:'cc',Lazer:'cl'})[c]||'co';
+
+// ─── RENDER FUNCTIONS ─────────────────────────────────────────────────────────
+
+function renderHeader(D) {
+  document.getElementById('greeting').textContent    = greeting;
+  document.getElementById('date-label').textContent  = cap(new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}));
+  document.getElementById('quote-text').textContent  = `"${D.quote.text}"`;
+  document.getElementById('quote-author').textContent = `— ${D.quote.author}`;
+}
+
+function renderHabits(t) {
+  const el=document.getElementById('today-habits');
+  if(!t.done){el.innerHTML='<span class="text-gray-500 text-sm">Sem check-in ainda — abre o Telegram 📱</span>';return;}
+  const exL={academia:"🏋️ Academia",corrida:"🏃 Corrida",ciclismo:"🚴 Ciclismo",outro:"🤸 Outro","":" Sem treino"};
+  el.innerHTML=[
+    t.smoked===0?`<span class="hb hb-g">🚭 Não fumou</span>`:`<span class="hb hb-r">🚬 ${t.smoked} cig</span>`,
+    t.drank===0 ?`<span class="hb hb-g">🍹 Não bebeu</span>`:`<span class="hb hb-r">🍺 Bebeu</span>`,
+    t.exercised?`<span class="hb hb-g">${exL[t.exercised]||"🤸 Exercitou"}</span>`:`<span class="hb hb-gray">❌ Sem treino</span>`,
+    t.took_bup ?`<span class="hb hb-b">💊 Bup ✓</span>`:`<span class="hb hb-y">💊 Bup !</span>`,
+  ].join('');
+}
+
+function renderTodayAnxiety(t) {
+  const a=t.anxiety||{}, el=document.getElementById('anx-readings');
+  const slots=[{label:"🌅 Manhã",val:a.manha},{label:"☀️ Tarde",val:a.tarde},{label:"🌙 Noite",val:a.noite}];
+  el.innerHTML=slots.map(s=>`
+    <div class="anx-reading ${anxClass(s.val)}">
+      <span style="font-size:9px;opacity:.6">${s.label}</span>
+      <span class="text-xl font-black" style="color:${anxColor(s.val)}">${s.val??'–'}</span>
+      <span style="font-size:9px;opacity:.4">/10</span>
+    </div>`).join('');
+}
+
+function renderEmotions(t) {
+  const el=document.getElementById('today-emotions'), list=t.emotions||[];
+  if(!list.length){el.innerHTML='<span class="text-gray-600 text-sm italic">Não registrado</span>';return;}
+  el.innerHTML=list.map(k=>{const e=EMOTIONS[k];return e?`<span class="ec ${e.c}">${e.e} ${e.l}</span>`:''}).join('');
+}
+
+function renderThought(t) {
+  if(t.thought){document.getElementById('thought-text').textContent=`"${t.thought}"`;}
+  else{document.getElementById('thought-text').classList.add('hidden');document.getElementById('thought-empty').classList.remove('hidden');}
+}
+
+function renderMIT(t) {
+  const m=t.mit;
+  if(!m||!m.text){document.getElementById('mit-text').classList.add('hidden');document.getElementById('mit-empty').classList.remove('hidden');return;}
+  document.getElementById('mit-text').textContent=m.text;
+  const badge=document.getElementById('mit-badge');
+  const map={done:['hb hb-g','✅ Feito'],partial:['hb hb-y','〰️ Parcial'],miss:['hb hb-r','❌ Não fez']};
+  const [cls,lbl]=map[m.status]||['hb hb-gray','—'];
+  badge.className=cls; badge.textContent=lbl;
+}
+
+function renderDiet(plan, status) {
+  if(!plan||!plan.length) return;
+  const s=status||[];
+  const done=s.filter(v=>v===true).length, total=s.filter(v=>v!==null).length;
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('diet-pct').textContent=`${done}/${plan.length} refeições · ${pct}%`;
+  document.getElementById('diet-bar').style.width=`${(done/plan.length)*100}%`;
+  document.getElementById('diet-list').innerHTML=plan.map((m,i)=>{
+    const sv=s[i]; const isDone=sv===true, isPending=sv===null;
+    return `<div class="meal-row">
+      <div class="meal-check ${isDone?'mc-done':'mc-miss'}">${isDone?'✅':isPending?'⬜':'❌'}</div>
+      <div class="flex-1 min-w-0">
+        <span class="text-white text-sm font-medium">${m.icon} ${m.name}</span>
+        <span class="text-gray-500 text-xs block">${m.desc}</span>
+      </div>
+      <span class="text-gray-600 text-xs flex-none">${m.time}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderStreaks(streaks) {
+  document.getElementById('streak-smoke').textContent=streaks.no_smoke;
+  document.getElementById('streak-drink').textContent=streaks.no_drink;
+}
+
+function renderWeekTraining(week) {
+  const grid=document.getElementById('week-grid');
+  const values=week.values||[], days=week.days||[];
+  const trained=values.filter(v=>v===true).length;
+  const todayIdx=new Date().getDay()===0?6:new Date().getDay()-1;
+  document.getElementById('week-count').textContent=`${trained}`;
+  grid.innerHTML=days.map((d,i)=>{
+    const v=values[i], isToday=i===todayIdx;
+    const cls=v===null?'wd wd-future':v?'wd wd-train':'wd wd-rest';
+    return `<div class="${cls}${isToday?' wd-today':''}" title="${d}">
+      <span style="font-size:9px">${d}</span>
+      <span>${v===null?'○':v?'✓':'·'}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('week-streak-label').textContent=`${trained} de 4 treinos`;
+  document.getElementById('week-pct').textContent=trained>=4?'🔥 Meta batida!':trained===3?'Quase lá!':'Pode mais!';
+}
+
+let _anxChart=null;
+function renderAnxietyChart(h) {
+  if(!h||!h.length) return;
+  const labels=h.map(d=>d.d);
+  const nightVals=h.map(d=>d.n).filter(v=>v!=null);
+  const avg=nightVals.length?(nightVals.reduce((a,b)=>a+b,0)/nightVals.length).toFixed(1):'–';
+  document.getElementById('avg-anx').textContent=avg;
+  const ctx=document.getElementById('anxietyChart').getContext('2d');
+  if(_anxChart){_anxChart.destroy();}
+  const grd=ctx.createLinearGradient(0,0,0,160);
+  grd.addColorStop(0,'rgba(129,140,248,.25)'); grd.addColorStop(1,'rgba(129,140,248,0)');
+  _anxChart=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Noite',data:h.map(d=>d.n),borderColor:'#818cf8',backgroundColor:grd,fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#818cf8',pointBorderColor:'#080812',pointBorderWidth:2,borderWidth:2.5},
+      {label:'Tarde',data:h.map(d=>d.t),borderColor:'#eab308',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:3,pointBackgroundColor:'#eab308',borderWidth:1.5,borderDash:[4,4]},
+      {label:'Manhã',data:h.map(d=>d.m),borderColor:'#60a5fa',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:3,pointBackgroundColor:'#60a5fa',borderWidth:1.5,borderDash:[2,4]},
+    ]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#111120',borderColor:'#1c1c30',borderWidth:1,titleColor:'#818cf8',bodyColor:'#e2e8f0',padding:10,callbacks:{label:c=>`${c.dataset.label}: ${c.raw}/10`}}},scales:{y:{min:0,max:10,grid:{color:'#18182e'},ticks:{color:'#4b5563',stepSize:2,font:{size:11}}},x:{grid:{display:false},ticks:{color:'#4b5563',font:{size:10},maxRotation:0}}}}
+  });
+}
+
+function renderCorrelations(corrs) {
+  const el=document.getElementById('correlations');
+  if(!corrs||!corrs.length){
+    el.innerHTML='<p class="text-gray-600 text-sm italic">Disponível após 14 dias de check-ins. Continue registrando! 📈</p>';
+    return;
+  }
+  el.innerHTML=corrs.map(c=>`
+    <div class="corr-row">
+      <div>
+        <span class="text-gray-300 text-sm">${c.label}</span>
+        <span class="text-gray-600 text-xs block">ansiedade: ${c.anx} vs ${c.ref} sem isso</span>
+      </div>
+      <span class="text-sm font-black ${c.positive?'text-emerald-400':'text-red-400'} ml-3">
+        ${c.positive?'▼':'▲'} ${Math.abs(c.diff).toFixed(1)}pts
+      </span>
+    </div>`).join('');
+}
+
+function renderExerciseGrid(data) {
+  const grid=document.getElementById('exercise-grid');
+  grid.innerHTML='';
+  if(!data||!data.length) return;
+  let trained=0, withData=0;
+  const today=new Date();
+  data.forEach((v,i)=>{
+    const d=new Date(today); d.setDate(d.getDate()-(29-i));
+    const lbl=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    const dot=document.createElement('span');
+    dot.className='ex-d '+(v===null?'ex-e':v?'ex-y':'ex-n');
+    dot.title=`${lbl}: ${v===null?'sem dados':v?'treinou':'não treinou'}`;
+    if(v===true)trained++; if(v!==null)withData++;
+    grid.appendChild(dot);
+  });
+  const pct=withData>0?Math.round(trained/withData*100):0;
+  document.getElementById('ex-count').textContent=`${trained} treinos`;
+  document.getElementById('ex-pct').textContent=`${pct}% de consistência`;
+}
+
+function renderExpenses(expenses, total) {
+  document.getElementById('expense-total').textContent=brl(total||0);
+  const list=expenses||[];
+  if(!list.length){
+    document.getElementById('expense-list').innerHTML='<p class="text-gray-600 text-sm italic">Nenhum gasto registrado.</p>';
+    return;
+  }
+  document.getElementById('expense-list').innerHTML=list.map(e=>`
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="catb ${catClass(e.cat)} shrink-0">${e.cat}</span>
+        <span class="text-gray-400 text-sm truncate">${e.desc||''}</span>
+      </div>
+      <div class="text-right shrink-0">
+        <span class="text-white font-bold text-sm">${brl(e.amount)}</span>
+        <span class="block text-gray-600 text-xs">${e.date}</span>
+      </div>
+    </div>`).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadData();
+setInterval(loadData, 5 * 60 * 1000); // refresh a cada 5 min
+
+// ─── PWA ──────────────────────────────────────────────────────────────────────
+if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
