@@ -102,8 +102,11 @@ def _finish_morning(cid):
     set_S(cid, 'idle')
     data = dict(T(cid))
     upsert_checkin(data)
+    anx = data.get('anx_manha')
     reset_T(cid)
-    bot.send_message(cid, "✅ Manhã registrada! Boa segunda-feira — vai lá. 🚀")
+    url = os.environ.get('APP_URL', 'http://localhost:5000')
+    bot.send_message(cid, f"✅ Manhã registrada! Vai lá 🚀\n\n<a href='{url}'>📊 Ver dashboard</a>")
+    _maybe_offer_sos(cid, anx)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CHECK-IN DA TARDE  (13h)
@@ -145,8 +148,11 @@ def _finish_afternoon(cid):
     set_S(cid, 'idle')
     data = dict(T(cid))
     upsert_checkin(data)
+    anx = data.get('anx_tarde')
     reset_T(cid)
-    bot.send_message(cid, "✅ Tarde registrada! Boa tarde 💪")
+    url = os.environ.get('APP_URL', 'http://localhost:5000')
+    bot.send_message(cid, f"✅ Tarde registrada! 💪\n\n<a href='{url}'>📊 Ver dashboard</a>")
+    _maybe_offer_sos(cid, anx)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CHECK-IN DA NOITE  (21h)
@@ -297,10 +303,11 @@ def _finish_evening(cid):
 
     upsert_checkin(data)
     streaks = get_streaks()
+    anx = data.get('anx_noite')
     reset_T(cid)
 
-    smoke_n  = data.get('smoked', 0) or 0
-    drank    = data.get('drank', 0)  or 0
+    smoke_n   = data.get('smoked', 0) or 0
+    drank     = data.get('drank', 0)  or 0
     exercised = data.get('exercised', '')
 
     smoke_line = f"🚭 Sem fumar: <b>{streaks['no_smoke']} dias</b> 🔥" if smoke_n == 0 else f"🚬 Fumou {smoke_n} cigarro(s)"
@@ -314,6 +321,92 @@ def _finish_evening(cid):
         f"{smoke_line}\n{drink_line}\n{ex_line}\n\n"
         f"<a href='{url}'>📊 Ver dashboard</a>"
     )
+    _maybe_offer_sos(cid, anx)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FLUXO SOS — ANSIEDADE ALTA
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _sos_final_kb():
+    kb = types.InlineKeyboardMarkup(row_width=5)
+    kb.add(*[types.InlineKeyboardButton(str(i), callback_data=f'sos_final:{i}') for i in range(1, 11)])
+    return kb
+
+def _maybe_offer_sos(cid, anx_val):
+    """Se ansiedade >= 7, oferece o fluxo SOS após o check-in."""
+    if anx_val and anx_val >= 7:
+        kb = types.InlineKeyboardMarkup(row_width=2)
+        kb.add(
+            types.InlineKeyboardButton("🧘 Sim, me ajuda", callback_data='sos_offer:yes'),
+            types.InlineKeyboardButton("Agora não",        callback_data='sos_offer:no'),
+        )
+        bot.send_message(cid,
+            f"Sua ansiedade está em <b>{anx_val}/10</b> 😰\n"
+            "Quer trabalhar isso agora? Leva 2 minutos.",
+            reply_markup=kb)
+
+def _ask_sos_trigger(cid):
+    set_S(cid, 'sos_trigger')
+    kb = types.InlineKeyboardMarkup(row_width=1)
+    kb.add(
+        types.InlineKeyboardButton("💭 Pensamentos acelerados",       callback_data='sos_trig:pensamentos'),
+        types.InlineKeyboardButton("😤 Corpo tenso / coração acelerado", callback_data='sos_trig:corpo'),
+        types.InlineKeyboardButton("📌 Pressão / situação específica", callback_data='sos_trig:situacao'),
+        types.InlineKeyboardButton("🤷 Não sei",                      callback_data='sos_trig:naosabe'),
+    )
+    bot.send_message(cid, "O que está por trás disso?", reply_markup=kb)
+
+def _sos_pensamentos(cid):
+    set_S(cid, 'sos_pensamentos')
+    bot.send_message(cid,
+        "💭 <b>Defusão cognitiva</b>\n\n"
+        "Escreve aqui o pensamento que não sai da cabeça:")
+
+def _sos_corpo(cid):
+    set_S(cid, 'sos_final')
+    bot.send_message(cid,
+        "🌬️ <b>Respiração 4-7-8</b>\n\n"
+        "Repete 3 vezes:\n\n"
+        "▶️ <b>Inspira</b> pelo nariz — 4 segundos\n"
+        "⏸ <b>Segura</b> — 7 segundos\n"
+        "💨 <b>Solta</b> pela boca — 8 segundos\n\n"
+        "Faz agora. Quando terminar, como está sua ansiedade?",
+        reply_markup=_sos_final_kb())
+
+def _sos_situacao(cid):
+    set_S(cid, 'sos_situacao')
+    bot.send_message(cid,
+        "📌 <b>Reestruturação cognitiva</b>\n\n"
+        "Qual é o pior cenário que você imagina acontecer?")
+
+def _sos_naosabe(cid):
+    set_S(cid, 'sos_final')
+    bot.send_message(cid,
+        "⚓ <b>Grounding 5-4-3-2-1</b>\n\n"
+        "Vamos ancorar você no presente:\n\n"
+        "👁 <b>5</b> coisas que você <b>vê</b> agora\n"
+        "✋ <b>4</b> coisas que pode <b>tocar</b>\n"
+        "👂 <b>3</b> sons que você <b>ouve</b>\n"
+        "👃 <b>2</b> cheiros que percebe\n"
+        "👅 <b>1</b> coisa que você <b>gosta</b>\n\n"
+        "Faz isso agora. Como está sua ansiedade?",
+        reply_markup=_sos_final_kb())
+
+def _sos_finish(cid, before, after):
+    set_S(cid, 'idle')
+    diff = before - after if before and after else 0
+    if diff > 0:
+        bot.send_message(cid,
+            f"✅ Baixou de {before} para <b>{after}/10</b>! ({diff} pontos)\n\n"
+            "Guarda essa técnica — ela funciona pra você 🌿")
+    elif diff == 0:
+        bot.send_message(cid,
+            "Tudo bem, às vezes precisa de mais tempo.\n"
+            "Que tal uma caminhada rápida de 10 min? 🚶")
+    else:
+        bot.send_message(cid,
+            "Respira fundo. Isso vai passar.\n"
+            "Se precisar de mais ajuda, fala comigo ou lembra do /noite. 🌙")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GASTOS AVULSOS
@@ -464,6 +557,20 @@ def handle_callback(call):
     if data == 'do_afternoon':start_afternoon(cid); return
     if data == 'do_evening':  start_evening(cid);   return
 
+    # ── SOS Flow ──
+    if data == 'sos_offer:yes':
+        _ask_sos_trigger(cid); return
+    if data == 'sos_offer:no':
+        bot.send_message(cid, "Ok! Estou aqui quando precisar. 🌿"); return
+    if data == 'sos_trig:pensamentos': _sos_pensamentos(cid); return
+    if data == 'sos_trig:corpo':       _sos_corpo(cid);       return
+    if data == 'sos_trig:situacao':    _sos_situacao(cid);    return
+    if data == 'sos_trig:naosabe':     _sos_naosabe(cid);     return
+    if data.startswith('sos_final:'):
+        after = int(data.split(':')[1])
+        before = T(cid).get('sos_anx_before')
+        _sos_finish(cid, before, after); return
+
     # ── Morning ──
     if data.startswith('m_bup:'):
         set_T(cid, 'took_bup', int(data.split(':')[1]))
@@ -573,7 +680,25 @@ def handle_text(msg):
     if text.startswith('/'): return
     s = S(cid)
 
-    if s == 'm_mit':
+    if s == 'sos_pensamentos':
+        set_S(cid, 'sos_final')
+        bot.send_message(cid,
+            f"Agora releia assim:\n\n"
+            f"<i>\"Estou tendo o pensamento de que {text}\"</i>\n\n"
+            "Você <b>não é</b> esse pensamento — está apenas observando ele passar. "
+            "Como está sua ansiedade agora?",
+            reply_markup=_sos_final_kb())
+    elif s == 'sos_situacao':
+        set_T(cid, 'sos_worst', text)
+        set_S(cid, 'sos_final')
+        bot.send_message(cid,
+            f"Pior cenário: <i>{text}</i>\n\n"
+            "Agora se pergunte:\n"
+            "• Qual a chance real disso acontecer?\n"
+            "• Se acontecesse, você sobreviveria e conseguiria lidar?\n\n"
+            "Na maioria das vezes a resposta é <b>sim</b>. Como está sua ansiedade agora?",
+            reply_markup=_sos_final_kb())
+    elif s == 'm_mit':
         set_T(cid, 'mit', text)
         _ask_gym_today(cid)
     elif s == 'n_thought':

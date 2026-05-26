@@ -1,117 +1,139 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0d1117" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Vida W" />
-  <title>App Vida — Wellington</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="theme-color" content="#F2F7F2"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="Calmo"/>
+  <title>Calmo — Wellington</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      background:#0d1117;
-      color:#c9d1d9;
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-      min-height:100vh;
-      padding-bottom:24px;
+    :root {
+      --bg:       #F2F7F2;
+      --card:     #FFFFFF;
+      --border:   #DFE9DF;
+      --p:        #2C7A5C;   /* verde floresta */
+      --p-light:  #84C9AD;   /* menta */
+      --accent:   #9B84D4;   /* lavanda */
+      --warm:     #F0A050;   /* âmbar sol */
+      --t1:       #1A2E1F;   /* texto principal */
+      --t2:       #4A7060;   /* texto secundário */
+      --t3:       #96B0A4;   /* texto mudo */
+      --done-bg:  #EAF6EE;
+      --done:     #2C7A5C;
+      --warn-bg:  #FEF3E2;
+      --warn:     #B07020;
+      --bad-bg:   #FDE8E8;
+      --bad:      #C0392B;
+      --shadow:   0 1px 4px rgba(44,122,92,.08), 0 4px 16px rgba(44,122,92,.06);
     }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;padding-bottom:32px;}
 
-    /* Cards */
-    .card{background:#161b27;border-radius:16px;padding:16px;border:1px solid #1e2535;}
-    .card-sm{background:#161b27;border-radius:12px;padding:12px 14px;border:1px solid #1e2535;}
-    .inset{background:#0d1117;border-radius:10px;padding:10px 12px;border:1px solid #1e2535;}
-    .label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#3d4f6b;margin-bottom:10px;}
+    .card{background:var(--card);border-radius:18px;padding:18px;border:1px solid var(--border);box-shadow:var(--shadow);}
+    .inset{background:var(--bg);border-radius:12px;padding:10px 14px;border:1px solid var(--border);}
+    .label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;}
 
     /* Header */
-    .header{padding:48px 16px 20px;background:linear-gradient(180deg,#111827 0%,#0d1117 100%);}
+    .header{padding:56px 18px 24px;background:linear-gradient(160deg,#e8f5ef 0%,var(--bg) 100%);}
 
-    /* Anxiety pill */
-    .anx-pill{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 12px;border-radius:10px;min-width:56px;}
-    .ap-low {background:#0d2318;border:1px solid #1a4731;}
-    .ap-mid {background:#1f1a0a;border:1px solid #3d2e09;}
-    .ap-hi  {background:#200f0f;border:1px solid #3d1515;}
-    .ap-none{background:#111827;border:1px solid #1e2535;}
-
-    /* Habit badges */
-    .hb{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:500;}
-    .hb-g  {background:#0d2318;color:#6ee7b7;border:1px solid #1a4731;}
-    .hb-r  {background:#200f0f;color:#fca5a5;border:1px solid #3d1515;}
-    .hb-y  {background:#1f1a0a;color:#fcd34d;border:1px solid #3d2e09;}
-    .hb-b  {background:#0f1a2e;color:#93c5fd;border:1px solid #1e3a5f;}
-    .hb-gray{background:#111827;color:#64748b;border:1px solid #1e2535;}
-
-    /* Emotion chips */
-    .ec{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:500;border:1px solid transparent;}
-    .ec-g {background:#0d2318;color:#6ee7b7;border-color:#1a4731;}
-    .ec-r {background:#200f0f;color:#fca5a5;border-color:#3d1515;}
-    .ec-o {background:#1f1207;color:#fdba74;border-color:#7c2d12;}
-    .ec-y {background:#1f1a0a;color:#fcd34d;border-color:#3d2e09;}
-    .ec-b {background:#0f1a2e;color:#93c5fd;border-color:#1e3a5f;}
-    .ec-i {background:#13112e;color:#c4b5fd;border-color:#2e2a6e;}
-    .ec-p {background:#1a0a2e;color:#d8b4fe;border-color:#4c1d95;}
-    .ec-gray{background:#111827;color:#64748b;border-color:#1e2535;}
-
-    /* Streak cards */
-    .s-smoke{background:linear-gradient(135deg,#0d2318,#0a2420);border-color:#1a4731;}
-    .s-drink{background:linear-gradient(135deg,#0f1a2e,#0a1628);border-color:#1e3a5f;}
-
-    /* Diet row */
-    .meal-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #1e2535;}
-    .meal-row:last-child{border-bottom:none;}
-    .meal-check{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
-    .mc-done{background:#0d2318;border:1px solid #1a4731;}
-    .mc-miss{background:#111827;border:1px solid #1e2535;}
-
-    /* Week training */
-    .wd{width:34px;height:40px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:9px;font-weight:700;}
-    .wd-train{background:#0d2318;color:#6ee7b7;border:1px solid #1a4731;}
-    .wd-rest{background:#111827;color:#3d4f6b;border:1px solid #1e2535;}
-    .wd-today{outline:2px solid #6ee7b7;outline-offset:2px;}
-    .wd-future{background:#0d1117;color:#1e2535;border:1px dashed #1e2535;}
-
-    /* Exercise dots */
-    .ex-d{width:18px;height:18px;border-radius:4px;display:inline-block;margin:2px;}
-    .ex-y{background:#1a4731;} .ex-n{background:#3d1515;} .ex-e{background:#1e2535;}
-
-    /* Expense */
-    .catb{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;}
-    .ca{background:#0d2318;color:#6ee7b7;} .ct{background:#0f1a2e;color:#93c5fd;}
-    .cs{background:#200f0f;color:#fca5a5;} .cc{background:#1f1a0a;color:#fcd34d;}
-    .cl{background:#1a0a2e;color:#d8b4fe;} .co{background:#111827;color:#64748b;}
-
-    /* Correlations */
-    .corr-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1e2535;}
-    .corr-row:last-child{border-bottom:none;}
+    /* Logo */
+    .logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;}
+    .logo-circle{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--p-light),var(--p));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(44,122,92,.25);}
 
     /* Quote */
-    .qbox{border-left:2px solid #1e3a5f;padding-left:12px;margin-top:4px;}
+    .qbox{border-left:3px solid var(--p-light);padding-left:12px;margin-top:8px;}
 
-    /* MIT badge */
-    .mit-done{background:#0d2318;color:#6ee7b7;border:1px solid #1a4731;}
-    .mit-partial{background:#1f1a0a;color:#fcd34d;border:1px solid #3d2e09;}
-    .mit-miss{background:#200f0f;color:#fca5a5;border:1px solid #3d1515;}
+    /* Habit badges */
+    .hb{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:9px;font-size:11px;font-weight:600;}
+    .hb-g  {background:var(--done-bg);color:var(--done);border:1px solid #c5e5d0;}
+    .hb-r  {background:var(--bad-bg);color:var(--bad);border:1px solid #f5c5c5;}
+    .hb-y  {background:var(--warn-bg);color:var(--warn);border:1px solid #f5ddb0;}
+    .hb-b  {background:#EEF0FB;color:#5B6AD4;border:1px solid #D0D5F5;}
+    .hb-gray{background:#F5F5F5;color:#888;border:1px solid #E0E0E0;}
 
-    hr.div{border:none;border-top:1px solid #1e2535;margin:12px 0;}
+    /* Anxiety pills */
+    .anx-pill{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 14px;border-radius:12px;min-width:60px;}
+    .ap-low {background:var(--done-bg);border:1px solid #c5e5d0;}
+    .ap-mid {background:var(--warn-bg);border:1px solid #f5ddb0;}
+    .ap-hi  {background:var(--bad-bg);border:1px solid #f5c5c5;}
+    .ap-none{background:#F5F5F5;border:1px solid #E0E0E0;}
 
-    .fade{animation:fi .35s ease both;}
-    .fade2{animation:fi .35s .08s ease both;}
-    .fade3{animation:fi .35s .16s ease both;}
-    @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    /* Emotions */
+    .ec{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid transparent;}
+    .ec-g {background:var(--done-bg);color:var(--done);border-color:#c5e5d0;}
+    .ec-r {background:var(--bad-bg);color:var(--bad);border-color:#f5c5c5;}
+    .ec-o {background:#FEF0E0;color:#C07020;border-color:#F5D5A0;}
+    .ec-y {background:var(--warn-bg);color:var(--warn);border-color:#f5ddb0;}
+    .ec-b {background:#EEF0FB;color:#5B6AD4;border-color:#D0D5F5;}
+    .ec-i {background:#F0EEF8;color:#7B68D4;border-color:#D8D0F0;}
+    .ec-p {background:#F5EEF8;color:#9B5CB4;border-color:#E0C8EC;}
+    .ec-gray{background:#F5F5F5;color:#888;border-color:#E0E0E0;}
 
     /* Thought */
-    .thought{font-size:13px;line-height:1.7;color:#8b949e;font-style:italic;}
+    .thought{font-size:13px;line-height:1.75;color:var(--t2);font-style:italic;}
+
+    /* Streak cards */
+    .s-smoke{background:linear-gradient(135deg,#E8F6EE,#D5EFE0);border-color:#c5e5d0;}
+    .s-drink{background:linear-gradient(135deg,#EEF0FB,#E0E5F8);border-color:#D0D5F5;}
+
+    /* Diet */
+    .meal-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+    .meal-row:last-child{border-bottom:none;}
+    .meal-check{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+    .mc-done{background:var(--done-bg);border:1.5px solid #c5e5d0;color:var(--done);}
+    .mc-miss{background:#F5F5F5;border:1.5px solid #E0E0E0;color:#C0C0C0;}
+
+    /* Week training */
+    .wd{flex:1;height:56px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;transition:transform .15s;}
+    .wd-train{background:linear-gradient(160deg,#d5efe0,#c0e5d0);color:var(--done);border:1.5px solid #c5e5d0;}
+    .wd-rest {background:#F5F5F5;color:var(--t3);border:1.5px solid #E8E8E8;}
+    .wd-today{outline:2.5px solid var(--p);outline-offset:2px;}
+    .wd-future{background:var(--bg);color:#C8D8C8;border:1.5px dashed #D8E8D8;}
+
+    /* Exercise dots */
+    .ex-d{width:18px;height:18px;border-radius:5px;display:inline-block;margin:2px;}
+    .ex-y{background:#b8e0c8;} .ex-n{background:#f5c5c5;} .ex-e{background:#E8E8E8;}
+
+    /* Expense */
+    .catb{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;}
+    .ca{background:var(--done-bg);color:var(--done);}
+    .ct{background:#EEF0FB;color:#5B6AD4;}
+    .cs{background:var(--bad-bg);color:var(--bad);}
+    .cc{background:var(--warn-bg);color:var(--warn);}
+    .cl{background:#F5EEF8;color:#9B5CB4;}
+    .co{background:#F5F5F5;color:#888;}
+
+    /* Correlations */
+    .corr-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+    .corr-row:last-child{border-bottom:none;}
+
+    /* MIT badge */
+    .mit-done   {background:var(--done-bg);color:var(--done);border:1px solid #c5e5d0;}
+    .mit-partial{background:var(--warn-bg);color:var(--warn);border:1px solid #f5ddb0;}
+    .mit-miss   {background:var(--bad-bg);color:var(--bad);border:1px solid #f5c5c5;}
+
+    hr.div{border:none;border-top:1px solid var(--border);margin:14px 0;}
+
+    .fade {animation:fi .3s ease both;}
+    .fade2{animation:fi .3s .06s ease both;}
+    .fade3{animation:fi .3s .12s ease both;}
+    @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   </style>
 </head>
 <body>
 
 <!-- LOADING -->
 <div id="loading" class="flex items-center justify-center min-h-screen">
-  <div class="text-center space-y-2">
-    <p class="text-3xl">🧠</p>
-    <p class="text-gray-600 text-xs">Carregando...</p>
+  <div class="text-center space-y-3">
+    <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+      <circle cx="28" cy="28" r="28" fill="url(#lg0)"/>
+      <defs><linearGradient id="lg0" x1="0" y1="0" x2="56" y2="56"><stop stop-color="#84C9AD"/><stop offset="1" stop-color="#2C7A5C"/></linearGradient></defs>
+      <text x="28" y="35" text-anchor="middle" fill="white" font-family="-apple-system,sans-serif" font-weight="800" font-size="22">W</text>
+    </svg>
+    <p style="color:var(--t3);font-size:13px">Carregando...</p>
   </div>
 </div>
 
@@ -120,167 +142,167 @@
 
 <!-- HEADER -->
 <div class="header fade">
-  <p id="greeting" class="text-xs font-semibold mb-0.5" style="color:#3d7a5f"></p>
-  <h1 class="text-2xl font-bold text-white">Wellington</h1>
-  <p id="date-label" class="text-xs mt-0.5 mb-4" style="color:#3d4f6b"></p>
+  <div class="logo">
+    <div class="logo-circle">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3C16 7 17 12 12 21C7 12 8 7 12 3Z" fill="rgba(255,255,255,.5)"/>
+        <circle cx="12" cy="11" r="3" fill="white"/>
+      </svg>
+    </div>
+    <div>
+      <p id="greeting" style="font-size:12px;font-weight:600;color:var(--p)"></p>
+      <h1 style="font-size:22px;font-weight:800;color:var(--t1);line-height:1.1">Wellington</h1>
+    </div>
+  </div>
+  <p id="date-label" style="font-size:12px;color:var(--t3);margin-bottom:12px"></p>
   <div class="qbox">
-    <p id="quote-text" class="text-xs leading-relaxed" style="color:#64748b;font-style:italic"></p>
-    <p id="quote-author" class="text-xs mt-1 font-medium" style="color:#3d4f6b"></p>
+    <p id="quote-text"  style="font-size:12px;line-height:1.7;color:var(--t2);font-style:italic"></p>
+    <p id="quote-author" style="font-size:11px;color:var(--t3);margin-top:4px;font-weight:600"></p>
   </div>
 </div>
 
-<div class="px-3 mt-3 space-y-3">
+<div style="padding:0 14px;margin-top:14px" class="space-y-3">
 
-<!-- ── HOJE ──────────────────────────────────── -->
+<!-- ── HOJE ──────────────────────────────────────── -->
 <div class="card fade2">
   <p class="label">Hoje</p>
-
-  <!-- Hábitos -->
   <div id="today-habits" class="flex flex-wrap gap-1.5 mb-3"></div>
-
   <hr class="div">
-
-  <!-- Ansiedade + Emoções -->
   <div class="flex gap-3">
     <div class="flex-none">
-      <p class="text-xs font-semibold mb-2" style="color:#3d4f6b;letter-spacing:.05em">ANSIEDADE</p>
-      <div class="flex gap-1.5" id="anx-readings"></div>
+      <p style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.08em;margin-bottom:8px">ANSIEDADE</p>
+      <div class="flex gap-2" id="anx-readings"></div>
     </div>
     <div class="flex-1 min-w-0">
-      <p class="text-xs font-semibold mb-2" style="color:#3d4f6b;letter-spacing:.05em">EMOÇÕES</p>
+      <p style="font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.08em;margin-bottom:8px">EMOÇÕES</p>
       <div id="today-emotions" class="flex flex-wrap gap-1"></div>
     </div>
   </div>
 </div>
 
-<!-- ── PENSAMENTO + MIT ──────────────────────── -->
+<!-- ── MENTE ──────────────────────────────────────── -->
 <div class="card fade2">
   <p class="label">Mente</p>
-
-  <!-- Pensamento -->
   <div class="mb-3">
-    <p class="text-xs mb-1" style="color:#3d4f6b">💭 Pensamento do dia</p>
+    <p style="font-size:11px;color:var(--t3);margin-bottom:5px">💭 Pensamento do dia</p>
     <p id="thought-text" class="thought"></p>
-    <p id="thought-empty" class="thought hidden">Não registrado.</p>
+    <p id="thought-empty" class="thought hidden" style="color:var(--t3)">Não registrado.</p>
   </div>
-
   <hr class="div">
-
-  <!-- MIT -->
   <div class="flex items-start justify-between gap-2">
     <div class="flex-1">
-      <p class="text-xs mb-1" style="color:#3d4f6b">🎯 Prioridade</p>
-      <p id="mit-text" class="text-white text-sm font-medium leading-snug"></p>
-      <p id="mit-empty" class="thought hidden">Não registrado.</p>
+      <p style="font-size:11px;color:var(--t3);margin-bottom:5px">🎯 Prioridade do dia</p>
+      <p id="mit-text" style="font-size:14px;font-weight:600;color:var(--t1);line-height:1.4"></p>
+      <p id="mit-empty" class="thought hidden" style="color:var(--t3)">Não registrado.</p>
     </div>
-    <span id="mit-badge" class="hb flex-none text-xs mt-0.5"></span>
+    <span id="mit-badge" class="hb flex-none mt-0.5 text-xs"></span>
   </div>
 </div>
 
-<!-- ── STREAKS ──────────────────────────────── -->
+<!-- ── STREAKS ────────────────────────────────────── -->
 <div class="grid grid-cols-2 gap-2 fade2">
   <div class="card s-smoke p-4">
-    <p class="text-xs mb-1" style="color:#3d7a5f">🚭 Sem fumar</p>
-    <p id="streak-smoke" class="text-4xl font-black" style="color:#6ee7b7"></p>
-    <p class="text-xs mt-1" style="color:#1a4731">dias seguidos</p>
+    <p style="font-size:11px;color:var(--p);margin-bottom:4px">🚭 Sem fumar</p>
+    <p id="streak-smoke" style="font-size:42px;font-weight:900;color:var(--p);line-height:1"></p>
+    <p style="font-size:11px;color:var(--t3);margin-top:4px">dias seguidos</p>
   </div>
   <div class="card s-drink p-4">
-    <p class="text-xs mb-1" style="color:#1e5080">🍹 Sem beber</p>
-    <p id="streak-drink" class="text-4xl font-black" style="color:#93c5fd"></p>
-    <p class="text-xs mt-1" style="color:#1e3a5f">dias seguidos</p>
+    <p style="font-size:11px;color:#5B6AD4;margin-bottom:4px">🍹 Sem beber</p>
+    <p id="streak-drink" style="font-size:42px;font-weight:900;color:#5B6AD4;line-height:1"></p>
+    <p style="font-size:11px;color:var(--t3);margin-top:4px">dias seguidos</p>
   </div>
 </div>
 
-<!-- ── DIETA ──────────────────────────────── -->
+<!-- ── DIETA ──────────────────────────────────────── -->
 <div class="card fade3">
   <div class="flex items-center justify-between mb-2">
     <p class="label mb-0">🥗 Dieta</p>
-    <span id="diet-pct" class="text-xs font-semibold" style="color:#6ee7b7"></span>
+    <span id="diet-pct" style="font-size:12px;font-weight:700;color:var(--p)"></span>
   </div>
   <div id="diet-list"></div>
   <div class="mt-3">
-    <div class="w-full h-1.5 rounded-full" style="background:#1e2535">
-      <div id="diet-bar" class="h-1.5 rounded-full transition-all" style="background:linear-gradient(90deg,#1a4731,#6ee7b7)"></div>
+    <div class="w-full rounded-full" style="height:6px;background:var(--border)">
+      <div id="diet-bar" class="rounded-full transition-all" style="height:6px;background:linear-gradient(90deg,var(--p-light),var(--p))"></div>
     </div>
   </div>
 </div>
 
-<!-- ── TREINOS DA SEMANA ──────────────────── -->
+<!-- ── TREINOS DA SEMANA ──────────────────────────── -->
 <div class="card fade3">
   <div class="flex items-center justify-between mb-3">
     <div>
-      <p class="label mb-0">💪 Semana</p>
-      <p class="text-xs" style="color:#3d4f6b">meta: 4x/semana</p>
+      <p class="label mb-0">💪 Semana de treinos</p>
+      <p style="font-size:11px;color:var(--t3)">meta: 4x/semana</p>
     </div>
     <div class="text-right">
-      <p id="week-count" class="text-2xl font-black text-white leading-none"></p>
-      <p class="text-xs" style="color:#3d4f6b">de 4</p>
+      <p id="week-count" style="font-size:28px;font-weight:900;color:var(--p);line-height:1"></p>
+      <p style="font-size:11px;color:var(--t3)">de 4</p>
     </div>
   </div>
-  <div id="week-grid" class="flex gap-1.5 justify-between mb-2"></div>
-  <div class="inset flex justify-between items-center mt-2">
-    <span id="week-streak-label" class="text-sm font-semibold" style="color:#8b949e"></span>
-    <span id="week-pct" class="text-xs" style="color:#3d4f6b"></span>
+  <div id="week-grid" class="flex gap-2 mb-3"></div>
+  <div class="inset flex justify-between items-center">
+    <span id="week-streak-label" style="font-size:13px;font-weight:600;color:var(--t2)"></span>
+    <span id="week-pct" style="font-size:12px;color:var(--t3)"></span>
   </div>
 </div>
 
-<!-- ── ANSIEDADE 14 DIAS ─────────────────── -->
+<!-- ── ANSIEDADE 14 DIAS ──────────────────────────── -->
 <div class="card fade3">
   <div class="flex items-start justify-between mb-3">
     <div>
       <p class="label mb-1">📈 Ansiedade — 14 dias</p>
-      <div class="flex gap-3 text-xs" style="color:#3d4f6b">
-        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background:#c4b5fd"></span>Noite</span>
-        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background:#fcd34d"></span>Tarde</span>
-        <span><span class="inline-block w-2 h-2 rounded-full mr-1" style="background:#93c5fd"></span>Manhã</span>
+      <div class="flex gap-3" style="font-size:11px;color:var(--t3)">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:3px"></span>Noite</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warm);margin-right:3px"></span>Tarde</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--p-light);margin-right:3px"></span>Manhã</span>
       </div>
     </div>
     <div class="text-right">
-      <p id="avg-anx" class="text-3xl font-black leading-none" style="color:#c4b5fd"></p>
-      <p class="text-xs" style="color:#3d4f6b">média</p>
+      <p id="avg-anx" style="font-size:32px;font-weight:900;color:var(--accent);line-height:1"></p>
+      <p style="font-size:11px;color:var(--t3)">média noite</p>
     </div>
   </div>
   <canvas id="anxietyChart" height="120"></canvas>
 </div>
 
-<!-- ── PADRÕES ───────────────────────────── -->
+<!-- ── PADRÕES ────────────────────────────────────── -->
 <div class="card fade3">
   <p class="label">🔍 Padrões identificados</p>
   <div id="correlations"></div>
 </div>
 
-<!-- ── EXERCÍCIOS 30 DIAS ─────────────────── -->
+<!-- ── EXERCÍCIOS 30 DIAS ─────────────────────────── -->
 <div class="card fade3">
   <div class="flex items-center justify-between mb-2">
     <p class="label mb-0">Exercícios — 30 dias</p>
-    <div class="flex gap-2 text-xs" style="color:#3d4f6b">
-      <span><span class="inline-block w-2.5 h-2.5 rounded mr-0.5" style="background:#1a4731"></span>Treinou</span>
-      <span><span class="inline-block w-2.5 h-2.5 rounded mr-0.5" style="background:#3d1515"></span>Não</span>
+    <div class="flex gap-3" style="font-size:11px;color:var(--t3)">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#b8e0c8;margin-right:3px"></span>Treinou</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#f5c5c5;margin-right:3px"></span>Não</span>
     </div>
   </div>
   <div id="exercise-grid" class="flex flex-wrap gap-0.5 mb-2"></div>
   <div class="inset flex justify-between">
-    <span id="ex-count" class="text-sm font-bold" style="color:#8b949e"></span>
-    <span id="ex-pct" class="text-xs" style="color:#3d4f6b"></span>
+    <span id="ex-count" style="font-size:13px;font-weight:700;color:var(--t2)"></span>
+    <span id="ex-pct" style="font-size:11px;color:var(--t3)"></span>
   </div>
 </div>
 
-<!-- ── GASTOS ────────────────────────────── -->
+<!-- ── GASTOS ─────────────────────────────────────── -->
 <div class="card fade3">
   <div class="flex items-center justify-between mb-3">
     <p class="label mb-0">💰 Gastos do mês</p>
-    <p id="expense-total" class="text-white font-bold text-base"></p>
+    <p id="expense-total" style="font-size:16px;font-weight:800;color:var(--t1)"></p>
   </div>
   <div id="expense-list" class="space-y-2"></div>
 </div>
 
 <!-- FOOTER -->
-<p class="text-center text-xs pb-2" style="color:#1e2535">
+<p style="text-align:center;font-size:11px;color:var(--border);padding-top:4px">
   Atualizado às <span id="last-update"></span>
 </p>
 
-</div><!-- /px-3 -->
-</div><!-- /content -->
+</div>
+</div>
 
 <script>
 let DATA = null;
@@ -305,16 +327,13 @@ async function loadData() {
       expense_total: api.expense_total || 0,
       quote:  api.quote  || { text: '', author: '' },
       today: t ? {
-        done:      true,
-        smoked:    t.smoked,
-        drank:     t.drank,
-        exercised: t.exercised || '',
-        took_bup:  t.took_bup,
-        anxiety:   { manha: t.anx_manha, tarde: t.anx_tarde, noite: t.anx_noite },
-        mit:       t.mit ? { text: t.mit, status: t.mit_done } : null,
-        thought:   t.thought || null,
-        diet:      Array.isArray(t.diet_meals) ? t.diet_meals : [null,null,null,null,null],
-        emotions:  Array.isArray(t.emotions)   ? t.emotions   : [],
+        done: true, smoked: t.smoked, drank: t.drank, exercised: t.exercised||'',
+        took_bup: t.took_bup,
+        anxiety: { manha: t.anx_manha, tarde: t.anx_tarde, noite: t.anx_noite },
+        mit: t.mit ? { text: t.mit, status: t.mit_done } : null,
+        thought: t.thought || null,
+        diet: Array.isArray(t.diet_meals) ? t.diet_meals : [null,null,null,null,null],
+        emotions: Array.isArray(t.emotions) ? t.emotions : [],
       } : { done: false },
     };
     document.getElementById('loading').style.display = 'none';
@@ -322,227 +341,215 @@ async function loadData() {
     renderAll();
   } catch(e) {
     document.getElementById('loading').innerHTML =
-      '<p class="text-red-400 text-sm text-center px-8">Erro ao carregar dados.</p>';
+      '<p style="color:#C0392B;font-size:13px;text-align:center;padding:24px">Erro ao carregar dados.</p>';
   }
 }
 
 function renderAll() {
   const D = DATA;
-  renderHeader(D);
-  renderHabits(D.today);
-  renderTodayAnxiety(D.today);
-  renderEmotions(D.today);
-  renderThought(D.today);
-  renderMIT(D.today);
-  renderDiet(D.diet_plan, D.today.diet);
-  renderStreaks(D.streaks);
-  renderWeekTraining(D.week);
-  renderAnxietyChart(D.anxiety_history);
-  renderCorrelations(D.correlations);
-  renderExerciseGrid(D.exercise_history);
+  renderHeader(D); renderHabits(D.today); renderTodayAnxiety(D.today);
+  renderEmotions(D.today); renderThought(D.today); renderMIT(D.today);
+  renderDiet(D.diet_plan, D.today.diet); renderStreaks(D.streaks);
+  renderWeekTraining(D.week); renderAnxietyChart(D.anxiety_history);
+  renderCorrelations(D.correlations); renderExerciseGrid(D.exercise_history);
   renderExpenses(D.expenses, D.expense_total);
   document.getElementById('last-update').textContent =
     new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 }
 
 const EMOTIONS = {
-  feliz:      {e:"😊",l:"Feliz",      c:"ec-g"},
-  animado:    {e:"🔥",l:"Animado",    c:"ec-o"},
-  motivado:   {e:"💪",l:"Motivado",   c:"ec-g"},
-  focado:     {e:"🎯",l:"Focado",     c:"ec-b"},
-  tranquilo:  {e:"😌",l:"Tranquilo",  c:"ec-i"},
-  cansado:    {e:"😴",l:"Cansado",    c:"ec-y"},
-  irritado:   {e:"😤",l:"Irritado",   c:"ec-o"},
-  ansioso:    {e:"😰",l:"Ansioso",    c:"ec-r"},
-  triste:     {e:"😔",l:"Triste",     c:"ec-gray"},
-  sobrecarregado:{e:"🫠",l:"Sobrecarregado",c:"ec-p"},
-  grato:      {e:"🙏",l:"Grato",      c:"ec-g"},
-  estressado: {e:"🤯",l:"Estressado", c:"ec-r"},
+  feliz:{e:"😊",l:"Feliz",c:"ec-g"}, animado:{e:"🔥",l:"Animado",c:"ec-o"},
+  motivado:{e:"💪",l:"Motivado",c:"ec-g"}, focado:{e:"🎯",l:"Focado",c:"ec-b"},
+  tranquilo:{e:"😌",l:"Tranquilo",c:"ec-i"}, cansado:{e:"😴",l:"Cansado",c:"ec-y"},
+  irritado:{e:"😤",l:"Irritado",c:"ec-o"}, ansioso:{e:"😰",l:"Ansioso",c:"ec-r"},
+  triste:{e:"😔",l:"Triste",c:"ec-gray"}, sobrecarregado:{e:"🫠",l:"Sobrecarregado",c:"ec-p"},
+  grato:{e:"🙏",l:"Grato",c:"ec-g"}, estressado:{e:"🤯",l:"Estressado",c:"ec-r"},
 };
 
-const brl  = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const cap  = s => s.charAt(0).toUpperCase()+s.slice(1);
-const h    = new Date().getHours();
-const greeting = h<12?"Bom dia":h<18?"Boa tarde":"Boa noite";
+const brl = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+const h = new Date().getHours();
+const greeting = h<12?"Bom dia 🌿":h<18?"Boa tarde ☀️":"Boa noite 🌙";
 const anxClass = v => !v?'ap-none':v<=3?'ap-low':v<=6?'ap-mid':'ap-hi';
-const anxColor = v => !v?'#3d4f6b':v<=3?'#6ee7b7':v<=6?'#fcd34d':'#fca5a5';
+const anxColor = v => !v?'var(--t3)':v<=3?'var(--p)':v<=6?'var(--warn)':'var(--bad)';
 const catClass = c => ({Alimentação:'ca',Transporte:'ct',Saúde:'cs',Casa:'cc',Lazer:'cl'})[c]||'co';
 
 function renderHeader(D) {
-  document.getElementById('greeting').textContent    = greeting;
-  document.getElementById('date-label').textContent  = cap(new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}));
+  document.getElementById('greeting').textContent   = greeting;
+  document.getElementById('date-label').textContent = cap(new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}));
   document.getElementById('quote-text').textContent  = `"${D.quote.text}"`;
   document.getElementById('quote-author').textContent = `— ${D.quote.author}`;
 }
 
 function renderHabits(t) {
-  const el=document.getElementById('today-habits');
-  if(!t.done){el.innerHTML='<span class="text-xs" style="color:#3d4f6b">Sem check-in — abre o Telegram 📱</span>';return;}
-  const exL={academia:"🏋️ Academia",corrida:"🏃 Corrida",ciclismo:"🚴 Ciclismo",outro:"🤸 Outro"};
-  el.innerHTML=[
+  const el = document.getElementById('today-habits');
+  if (!t.done) { el.innerHTML = '<span style="font-size:12px;color:var(--t3)">Sem check-in — abre o Telegram 📱</span>'; return; }
+  const exL = {academia:"🏋️ Academia",corrida:"🏃 Corrida",ciclismo:"🚴 Ciclismo",outro:"🤸 Outro"};
+  el.innerHTML = [
     t.smoked===0?`<span class="hb hb-g">🚭 Não fumou</span>`:`<span class="hb hb-r">🚬 ${t.smoked} cig</span>`,
     t.drank===0 ?`<span class="hb hb-g">🍹 Não bebeu</span>`:`<span class="hb hb-r">🍺 Bebeu</span>`,
-    t.exercised?`<span class="hb hb-g">${exL[t.exercised]||"🤸 Exercitou"}</span>`:`<span class="hb hb-gray">❌ Sem treino</span>`,
-    t.took_bup ?`<span class="hb hb-b">💊 Bup ✓</span>`:`<span class="hb hb-y">💊 Bup !</span>`,
+    t.exercised ?`<span class="hb hb-g">${exL[t.exercised]||"🤸 Exercitou"}</span>`:`<span class="hb hb-gray">❌ Sem treino</span>`,
+    t.took_bup  ?`<span class="hb hb-b">💊 Bup ✓</span>`:`<span class="hb hb-y">💊 Bup !</span>`,
   ].join('');
 }
 
 function renderTodayAnxiety(t) {
-  const a=t.anxiety||{}, el=document.getElementById('anx-readings');
-  const slots=[{label:"Manhã",val:a.manha},{label:"Tarde",val:a.tarde},{label:"Noite",val:a.noite}];
-  el.innerHTML=slots.map(s=>`
+  const a = t.anxiety||{}, el = document.getElementById('anx-readings');
+  const slots = [{label:"Manhã",val:a.manha},{label:"Tarde",val:a.tarde},{label:"Noite",val:a.noite}];
+  el.innerHTML = slots.map(s => `
     <div class="anx-pill ${anxClass(s.val)}">
-      <span style="font-size:9px;color:#3d4f6b">${s.label}</span>
-      <span class="text-lg font-black" style="color:${anxColor(s.val)}">${s.val??'–'}</span>
+      <span style="font-size:9px;color:var(--t3)">${s.label}</span>
+      <span style="font-size:20px;font-weight:900;color:${anxColor(s.val)}">${s.val??'–'}</span>
     </div>`).join('');
 }
 
 function renderEmotions(t) {
-  const el=document.getElementById('today-emotions'), list=t.emotions||[];
-  if(!list.length){el.innerHTML='<span class="text-xs" style="color:#3d4f6b">Não registrado</span>';return;}
-  el.innerHTML=list.map(k=>{const e=EMOTIONS[k];return e?`<span class="ec ${e.c}">${e.e} ${e.l}</span>`:''}).join('');
+  const el = document.getElementById('today-emotions'), list = t.emotions||[];
+  if (!list.length) { el.innerHTML = '<span style="font-size:12px;color:var(--t3)">Não registrado</span>'; return; }
+  el.innerHTML = list.map(k => { const e = EMOTIONS[k]; return e ? `<span class="ec ${e.c}">${e.e} ${e.l}</span>` : ''; }).join('');
 }
 
 function renderThought(t) {
-  if(t.thought){document.getElementById('thought-text').textContent=`"${t.thought}"`;}
-  else{document.getElementById('thought-text').classList.add('hidden');document.getElementById('thought-empty').classList.remove('hidden');}
+  if (t.thought) { document.getElementById('thought-text').textContent = `"${t.thought}"`; }
+  else { document.getElementById('thought-text').classList.add('hidden'); document.getElementById('thought-empty').classList.remove('hidden'); }
 }
 
 function renderMIT(t) {
-  const m=t.mit;
-  if(!m||!m.text){document.getElementById('mit-text').classList.add('hidden');document.getElementById('mit-empty').classList.remove('hidden');return;}
-  document.getElementById('mit-text').textContent=m.text;
-  const badge=document.getElementById('mit-badge');
-  const map={done:['hb mit-done','✓ Feito'],partial:['hb mit-partial','〰 Parcial'],miss:['hb mit-miss','✕ Não fez']};
-  const [cls,lbl]=map[m.status]||['hb hb-gray','—'];
-  badge.className=cls; badge.textContent=lbl;
+  const m = t.mit;
+  if (!m||!m.text) { document.getElementById('mit-text').classList.add('hidden'); document.getElementById('mit-empty').classList.remove('hidden'); return; }
+  document.getElementById('mit-text').textContent = m.text;
+  const badge = document.getElementById('mit-badge');
+  const map = {done:['hb mit-done','✓ Feito'],partial:['hb mit-partial','〰 Parcial'],miss:['hb mit-miss','✕ Não fez']};
+  const [cls,lbl] = map[m.status]||['hb hb-gray','—'];
+  badge.className = cls; badge.textContent = lbl;
 }
 
 function renderDiet(plan, status) {
-  if(!plan||!plan.length) return;
-  const s=status||[];
-  const done=s.filter(v=>v===true).length, total=s.filter(v=>v!==null).length;
-  const pct=total>0?Math.round(done/total*100):0;
-  document.getElementById('diet-pct').textContent=`${done}/${plan.length} · ${pct}%`;
-  document.getElementById('diet-bar').style.width=`${(done/plan.length)*100}%`;
-  document.getElementById('diet-list').innerHTML=plan.map((m,i)=>{
-    const sv=s[i]; const isDone=sv===true, isPending=sv===null;
+  if (!plan||!plan.length) return;
+  const s = status||[];
+  const done = s.filter(v=>v===true).length;
+  const pct = Math.round(done/plan.length*100);
+  document.getElementById('diet-pct').textContent = `${done}/${plan.length} · ${pct}%`;
+  document.getElementById('diet-bar').style.width = `${done/plan.length*100}%`;
+  document.getElementById('diet-list').innerHTML = plan.map((m,i) => {
+    const sv = s[i], isDone = sv===true, isPending = sv===null;
     return `<div class="meal-row">
-      <div class="meal-check ${isDone?'mc-done':'mc-miss'}" style="font-size:10px">${isDone?'✓':isPending?'○':'✕'}</div>
+      <div class="meal-check ${isDone?'mc-done':'mc-miss'}">${isDone?'✓':isPending?'○':'✕'}</div>
       <div class="flex-1 min-w-0">
-        <span class="text-sm font-medium" style="color:#c9d1d9">${m.icon} ${m.name}</span>
-        <span class="text-xs block" style="color:#3d4f6b">${m.desc}</span>
+        <span style="font-size:13px;font-weight:600;color:var(--t1)">${m.icon} ${m.name}</span>
+        <span style="font-size:11px;color:var(--t3);display:block">${m.desc}</span>
       </div>
-      <span class="text-xs flex-none" style="color:#3d4f6b">${m.time}</span>
+      <span style="font-size:11px;color:var(--t3)">${m.time}</span>
     </div>`;
   }).join('');
 }
 
 function renderStreaks(streaks) {
-  document.getElementById('streak-smoke').textContent=streaks.no_smoke;
-  document.getElementById('streak-drink').textContent=streaks.no_drink;
+  document.getElementById('streak-smoke').textContent = streaks.no_smoke;
+  document.getElementById('streak-drink').textContent = streaks.no_drink;
 }
 
 function renderWeekTraining(week) {
-  const grid=document.getElementById('week-grid');
-  const values=week.values||[], days=week.days||[];
-  const trained=values.filter(v=>v===true).length;
-  const todayIdx=new Date().getDay()===0?6:new Date().getDay()-1;
-  document.getElementById('week-count').textContent=`${trained}`;
-  grid.innerHTML=days.map((d,i)=>{
-    const v=values[i], isToday=i===todayIdx;
-    const cls=v===null?'wd wd-future':v?'wd wd-train':'wd wd-rest';
+  const grid = document.getElementById('week-grid');
+  const values = week.values||[], days = week.days||[];
+  const trained = values.filter(v=>v===true).length;
+  const todayIdx = new Date().getDay()===0?6:new Date().getDay()-1;
+  document.getElementById('week-count').textContent = `${trained}`;
+  grid.innerHTML = days.map((d,i) => {
+    const v = values[i], isToday = i===todayIdx;
+    const cls = v===null?'wd wd-future':v?'wd wd-train':'wd wd-rest';
+    const icon = v===null?'·':v?'✓':'·';
     return `<div class="${cls}${isToday?' wd-today':''}" title="${d}">
-      <span style="font-size:9px">${d}</span>
-      <span style="font-size:13px">${v===null?'·':v?'✓':'·'}</span>
+      <span style="font-size:9px;font-weight:700">${d}</span>
+      <span style="font-size:16px">${icon}</span>
     </div>`;
   }).join('');
-  document.getElementById('week-streak-label').textContent=`${trained} de 4 treinos`;
-  document.getElementById('week-pct').textContent=trained>=4?'🔥 Meta!':trained===3?'Quase!':'Vai lá!';
+  document.getElementById('week-streak-label').textContent = `${trained} de 4 treinos`;
+  document.getElementById('week-pct').textContent = trained>=4?'🔥 Meta!':trained===3?'Quase lá!':'Vai lá!';
 }
 
-let _anxChart=null;
+let _anxChart = null;
 function renderAnxietyChart(h) {
-  if(!h||!h.length) return;
-  const labels=h.map(d=>d.d);
-  const nightVals=h.map(d=>d.n).filter(v=>v!=null);
-  const avg=nightVals.length?(nightVals.reduce((a,b)=>a+b,0)/nightVals.length).toFixed(1):'–';
-  document.getElementById('avg-anx').textContent=avg;
-  const ctx=document.getElementById('anxietyChart').getContext('2d');
-  if(_anxChart){_anxChart.destroy();}
-  const grd=ctx.createLinearGradient(0,0,0,140);
-  grd.addColorStop(0,'rgba(196,181,253,.15)'); grd.addColorStop(1,'rgba(196,181,253,0)');
-  _anxChart=new Chart(ctx,{
+  if (!h||!h.length) return;
+  const labels = h.map(d=>d.d);
+  const nightVals = h.map(d=>d.n).filter(v=>v!=null);
+  const avg = nightVals.length?(nightVals.reduce((a,b)=>a+b,0)/nightVals.length).toFixed(1):'–';
+  document.getElementById('avg-anx').textContent = avg;
+  const ctx = document.getElementById('anxietyChart').getContext('2d');
+  if (_anxChart) _anxChart.destroy();
+  const grd = ctx.createLinearGradient(0,0,0,140);
+  grd.addColorStop(0,'rgba(155,132,212,.18)'); grd.addColorStop(1,'rgba(155,132,212,0)');
+  _anxChart = new Chart(ctx, {
     type:'line',
-    data:{labels,datasets:[
-      {label:'Noite',data:h.map(d=>d.n),borderColor:'#c4b5fd',backgroundColor:grd,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#c4b5fd',pointBorderColor:'#0d1117',pointBorderWidth:2,borderWidth:2},
-      {label:'Tarde',data:h.map(d=>d.t),borderColor:'#fcd34d',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:2,pointBackgroundColor:'#fcd34d',borderWidth:1.5,borderDash:[4,4]},
-      {label:'Manhã',data:h.map(d=>d.m),borderColor:'#93c5fd',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:2,pointBackgroundColor:'#93c5fd',borderWidth:1.5,borderDash:[2,4]},
+    data:{labels, datasets:[
+      {label:'Noite',data:h.map(d=>d.n),borderColor:'#9B84D4',backgroundColor:grd,fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#9B84D4',pointBorderColor:'white',pointBorderWidth:2,borderWidth:2},
+      {label:'Tarde',data:h.map(d=>d.t),borderColor:'#F0A050',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:2,pointBackgroundColor:'#F0A050',borderWidth:1.5,borderDash:[4,4]},
+      {label:'Manhã',data:h.map(d=>d.m),borderColor:'#84C9AD',backgroundColor:'transparent',fill:false,tension:.4,pointRadius:2,pointBackgroundColor:'#84C9AD',borderWidth:1.5,borderDash:[2,4]},
     ]},
-    options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'#161b27',borderColor:'#1e2535',borderWidth:1,titleColor:'#c4b5fd',bodyColor:'#c9d1d9',padding:8,callbacks:{label:c=>`${c.dataset.label}: ${c.raw}/10`}}},scales:{y:{min:0,max:10,grid:{color:'#1a2030'},ticks:{color:'#3d4f6b',stepSize:2,font:{size:10}}},x:{grid:{display:false},ticks:{color:'#3d4f6b',font:{size:9},maxRotation:0}}}}
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{backgroundColor:'white',borderColor:'#DFE9DF',borderWidth:1,titleColor:'#9B84D4',bodyColor:'#1A2E1F',padding:10,callbacks:{label:c=>`${c.dataset.label}: ${c.raw}/10`}}},scales:{y:{min:0,max:10,grid:{color:'#EEF3EE'},ticks:{color:'#96B0A4',stepSize:2,font:{size:10}}},x:{grid:{display:false},ticks:{color:'#96B0A4',font:{size:9},maxRotation:0}}}}
   });
 }
 
 function renderCorrelations(corrs) {
-  const el=document.getElementById('correlations');
-  if(!corrs||!corrs.length){
-    el.innerHTML='<p class="text-xs italic" style="color:#3d4f6b">Disponível após 14 dias de check-ins.</p>';
+  const el = document.getElementById('correlations');
+  if (!corrs||!corrs.length) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--t3);font-style:italic">Disponível após 14 dias de check-ins.</p>';
     return;
   }
-  el.innerHTML=corrs.map(c=>`
+  el.innerHTML = corrs.map(c => `
     <div class="corr-row">
       <div>
-        <span class="text-sm" style="color:#c9d1d9">${c.label}</span>
-        <span class="text-xs block" style="color:#3d4f6b">ansiedade: ${c.anx} vs ${c.ref}</span>
+        <span style="font-size:13px;color:var(--t1)">${c.label}</span>
+        <span style="font-size:11px;color:var(--t3);display:block">ansiedade: ${c.anx} vs ${c.ref}</span>
       </div>
-      <span class="text-sm font-bold ml-3 ${c.positive?'text-emerald-400':'text-red-400'}">
+      <span style="font-size:13px;font-weight:800;color:${c.positive?'var(--p)':'var(--bad)'};margin-left:12px">
         ${c.positive?'▼':'▲'} ${Math.abs(c.diff).toFixed(1)}
       </span>
     </div>`).join('');
 }
 
 function renderExerciseGrid(data) {
-  const grid=document.getElementById('exercise-grid');
-  grid.innerHTML='';
-  if(!data||!data.length) return;
+  const grid = document.getElementById('exercise-grid');
+  grid.innerHTML = '';
+  if (!data||!data.length) return;
   let trained=0, withData=0;
-  const today=new Date();
-  data.forEach((v,i)=>{
-    const d=new Date(today); d.setDate(d.getDate()-(29-i));
-    const lbl=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-    const dot=document.createElement('span');
-    dot.className='ex-d '+(v===null?'ex-e':v?'ex-y':'ex-n');
-    dot.title=`${lbl}: ${v===null?'sem dados':v?'treinou':'não treinou'}`;
+  const today = new Date();
+  data.forEach((v,i) => {
+    const d = new Date(today); d.setDate(d.getDate()-(29-i));
+    const lbl = d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    const dot = document.createElement('span');
+    dot.className = 'ex-d '+(v===null?'ex-e':v?'ex-y':'ex-n');
+    dot.title = `${lbl}: ${v===null?'sem dados':v?'treinou':'não treinou'}`;
     if(v===true)trained++; if(v!==null)withData++;
     grid.appendChild(dot);
   });
-  const pct=withData>0?Math.round(trained/withData*100):0;
-  document.getElementById('ex-count').textContent=`${trained} treinos`;
-  document.getElementById('ex-pct').textContent=`${pct}% de consistência`;
+  const pct = withData>0?Math.round(trained/withData*100):0;
+  document.getElementById('ex-count').textContent = `${trained} treinos`;
+  document.getElementById('ex-pct').textContent = `${pct}% de consistência`;
 }
 
 function renderExpenses(expenses, total) {
-  document.getElementById('expense-total').textContent=brl(total||0);
-  const list=expenses||[];
-  if(!list.length){
-    document.getElementById('expense-list').innerHTML='<p class="text-xs italic" style="color:#3d4f6b">Nenhum gasto registrado.</p>';
+  document.getElementById('expense-total').textContent = brl(total||0);
+  const list = expenses||[];
+  if (!list.length) {
+    document.getElementById('expense-list').innerHTML = '<p style="font-size:12px;color:var(--t3);font-style:italic">Nenhum gasto registrado.</p>';
     return;
   }
-  document.getElementById('expense-list').innerHTML=list.map(e=>`
+  document.getElementById('expense-list').innerHTML = list.map(e => `
     <div class="flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 min-w-0">
         <span class="catb ${catClass(e.cat)} shrink-0">${e.cat}</span>
-        <span class="text-xs truncate" style="color:#8b949e">${e.desc||''}</span>
+        <span style="font-size:12px;color:var(--t2)" class="truncate">${e.desc||''}</span>
       </div>
       <div class="text-right shrink-0">
-        <span class="text-white font-semibold text-sm">${brl(e.amount)}</span>
-        <span class="block text-xs" style="color:#3d4f6b">${e.date}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--t1)">${brl(e.amount)}</span>
+        <span style="font-size:10px;color:var(--t3);display:block">${e.date}</span>
       </div>
     </div>`).join('');
 }
 
 loadData();
-setInterval(loadData, 5 * 60 * 1000);
+setInterval(loadData, 5*60*1000);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('/static/sw.js').catch(()=>{});
 </script>
 </body>
